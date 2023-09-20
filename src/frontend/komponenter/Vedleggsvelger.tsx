@@ -20,7 +20,7 @@ import { DokumentType, StønadType, stønadTypeTilTekst } from '../typer/stønad
 import axios from 'axios';
 import KnappMedPadding from '../felles/Knapp';
 import { Upload } from '@navikt/ds-icons';
-import { Alert, BodyShort, Heading, Label, Loader } from '@navikt/ds-react';
+import { BodyShort, Heading, Label, Loader } from '@navikt/ds-react';
 
 const Filvelger = styled.div`
   margin-top: 1rem;
@@ -113,7 +113,6 @@ const Vedleggsvelger: React.FC<IProps> = ({
     IVedleggForEttersending[]
   >([]);
   const [harTrykketLastOpp, settHarTrykketLastOpp] = useState<boolean>(false);
-  const MAKS_ANTALL_VEDLEGG = 10;
 
   const leggTilVedleggPåInnsending = (
     nyeVedlegg: IVedleggForEttersending[],
@@ -293,15 +292,6 @@ const Vedleggsvelger: React.FC<IProps> = ({
     );
   };
 
-  const visForMangeVedleggAlert = () => {
-    return (
-      <Alert size="small" variant="error">
-        For mange vedlagt dokumenter, maks antall vedlegg er{' '}
-        {MAKS_ANTALL_VEDLEGG}.
-      </Alert>
-    );
-  };
-
   return (
     <Container>
       <Heading level={'1'} size={'xsmall'}>
@@ -344,9 +334,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
 
       <StyledAlertStripe melding={alertStripeMelding} />
 
-      {vedleggForSammenslåing.length > MAKS_ANTALL_VEDLEGG
-        ? visForMangeVedleggAlert()
-        : visLastOppKnapp()}
+      {visLastOppKnapp()}
     </Container>
   );
 };
