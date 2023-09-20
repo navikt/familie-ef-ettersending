@@ -13,13 +13,15 @@ jobs:
   build:
     name: Build and push Docker container
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: yarn
-          registry-url: "https://npm.pkg.github.com"
+          registry-url: 'https://npm.pkg.github.com'
       - name: Yarn install
         run: yarn --prefer-offline --frozen-lockfile
         env:
@@ -44,4 +46,3 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: build_n_deploy/naiserator/nais-dev.yaml
-
