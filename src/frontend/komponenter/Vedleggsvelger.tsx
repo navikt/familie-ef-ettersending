@@ -285,8 +285,9 @@ const Vedleggsvelger: React.FC<IProps> = ({
           disabled={
             harTrykketLastOpp || vedleggForSammenslåing.length < 1 || laster
           }
+          loading={harTrykketLastOpp}
         >
-          {harTrykketLastOpp ? 'Laster...' : 'Last opp'}
+          Last Opp
         </KnappMedPadding>
       </KnappContainer>
     );
@@ -331,9 +332,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
           Filene blir slått sammen til ett dokument.
         </SentrertTekst>
       )}
-
       <StyledAlertStripe melding={alertStripeMelding} />
-
       {visLastOppKnapp()}
     </Container>
   );
