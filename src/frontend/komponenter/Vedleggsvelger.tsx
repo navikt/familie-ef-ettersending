@@ -20,7 +20,7 @@ import { DokumentType, StønadType, stønadTypeTilTekst } from '../typer/stønad
 import axios from 'axios';
 import KnappMedPadding from '../felles/Knapp';
 import { Upload } from '@navikt/ds-icons';
-import { BodyShort, Heading, Label, Loader } from '@navikt/ds-react';
+import { Alert, BodyShort, Heading, Label, Loader } from '@navikt/ds-react';
 
 const Filvelger = styled.div`
   margin-top: 1rem;
@@ -106,15 +106,17 @@ const Vedleggsvelger: React.FC<IProps> = ({
   beskrivelse,
 }: IProps) => {
   const [alertStripeMelding, settAlertStripeMelding] = useState<alertMelding>(
-    alertMelding.TOM
+    alertMelding.TOM,
   );
   const [laster, settLaster] = useState<boolean>(false);
   const [vedleggForSammenslåing, settVedleggForSammenslåing] = useState<
     IVedleggForEttersending[]
   >([]);
+  const [harTrykketLastOpp, settHarTrykketLastOpp] = useState<boolean>(false);
+  const MAKS_ANTALL_VEDLEGG = 10;
 
   const leggTilVedleggPåInnsending = (
-    nyeVedlegg: IVedleggForEttersending[]
+    nyeVedlegg: IVedleggForEttersending[],
   ): IDokumentasjonsbehov => {
     return {
       ...innsending,
@@ -127,22 +129,24 @@ const Vedleggsvelger: React.FC<IProps> = ({
 
   const dokumenterSkalSammenslås = (
     dokumentType: string | undefined,
-    antallVedlegg: number
+    antallVedlegg: number,
   ) => {
     return skalDokumenttypeSlåsSammen(dokumentType) && antallVedlegg > 1;
   };
 
   const slåSammenVedleggOgOppdaterInnsending = async () => {
+    settHarTrykketLastOpp(true);
     settAlertStripeMelding(alertMelding.TOM);
+
     if (
       dokumenterSkalSammenslås(
         innsending.dokumenttype,
-        vedleggForSammenslåing.length
+        vedleggForSammenslåing.length,
       )
     ) {
       try {
         const dokumentId = await slåSammenVedlegg(
-          vedleggForSammenslåing.map((v) => v.id)
+          vedleggForSammenslåing.map((v) => v.id),
         );
         const nyInnsending = leggTilVedleggPåInnsending([
           {
@@ -154,6 +158,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
           },
         ]);
         oppdaterInnsending({ ...nyInnsending, erSammenslått: true });
+        settHarTrykketLastOpp(false);
         lukkModal();
       } catch (error: unknown) {
         settAlertStripeMelding(alertMelding.FEIL_SAMMENSLÅING_DOKUMENT);
@@ -168,7 +173,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
   const slettVedlegg = (vedlegg: IVedleggForEttersending): void => {
     settVedleggForSammenslåing((prevState) => {
       return prevState.filter(
-        (v: IVedleggForEttersending) => v.id !== vedlegg.id
+        (v: IVedleggForEttersending) => v.id !== vedlegg.id,
       );
     });
   };
@@ -206,7 +211,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
             filstørrelse: fil.size,
           });
         }
-      })
+      }),
     );
     settVedleggForSammenslåing((prevState) => [...prevState, ...vedleggListe]);
     settLaster(false);
@@ -260,7 +265,7 @@ const Vedleggsvelger: React.FC<IProps> = ({
         }
 
         return fil;
-      })
+      }),
     );
     if (feilmeldingsliste.length <= 0) {
       lastOppVedlegg(filer);
@@ -270,6 +275,32 @@ const Vedleggsvelger: React.FC<IProps> = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
   });
+
+  const visLastOppKnapp = () => {
+    return (
+      <KnappContainer>
+        <KnappMedPadding
+          onClick={
+            harTrykketLastOpp ? undefined : slåSammenVedleggOgOppdaterInnsending
+          }
+          disabled={
+            harTrykketLastOpp || vedleggForSammenslåing.length < 1 || laster
+          }
+        >
+          {harTrykketLastOpp ? 'Laster...' : 'Last opp'}
+        </KnappMedPadding>
+      </KnappContainer>
+    );
+  };
+
+  const visForMangeVedleggAlert = () => {
+    return (
+      <Alert size="small" variant="error">
+        For mange vedlagt dokumenter, maks antall vedlegg er{' '}
+        {MAKS_ANTALL_VEDLEGG}.
+      </Alert>
+    );
+  };
 
   return (
     <Container>
@@ -310,15 +341,12 @@ const Vedleggsvelger: React.FC<IProps> = ({
           Filene blir slått sammen til ett dokument.
         </SentrertTekst>
       )}
+
       <StyledAlertStripe melding={alertStripeMelding} />
-      <KnappContainer>
-        <KnappMedPadding
-          onClick={slåSammenVedleggOgOppdaterInnsending}
-          disabled={vedleggForSammenslåing.length < 1 || laster}
-        >
-          Last opp
-        </KnappMedPadding>
-      </KnappContainer>
+
+      {vedleggForSammenslåing.length > MAKS_ANTALL_VEDLEGG
+        ? visForMangeVedleggAlert()
+        : visLastOppKnapp()}
     </Container>
   );
 };
