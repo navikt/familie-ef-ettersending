@@ -1,19 +1,17 @@
-import amplitude from 'amplitude-js';
+import * as amplitude from '@amplitude/analytics-browser';
 import { IDokumentasjonsbehov } from '../typer/ettersending';
 
-const amplitudeInstance = amplitude.getInstance();
-
-amplitudeInstance.init('default', '', {
-  apiEndpoint: 'amplitude.nav.no/collect-auto',
-  saveEvents: false,
-  includeUtm: true,
-  includeReferrer: true,
-  platform: window.location.toString(),
+amplitude.init('default', undefined, {
+  serverUrl: 'https://amplitude.nav.no/collect-auto',
+  defaultTracking: false,
+  ingestionMetadata: {
+    sourceName: window.location.toString().split('?')[0].split('#')[0],
+  },
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function logEvent(eventName: string, eventProperties: any) {
-  amplitudeInstance.logEvent(eventName, eventProperties);
+  amplitude.track(eventName, eventProperties);
 }
 
 export interface FeilOpplastingProps {
