@@ -2,7 +2,6 @@ FROM gcr.io/distroless/nodejs:18
 
 WORKDIR /var/server
 
-COPY assets ./assets
 COPY dist ./dist
 COPY build ./build
 COPY node_modules ./node_modules
