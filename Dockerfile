@@ -4,6 +4,8 @@ WORKDIR /var/server
 
 COPY dist ./dist
 COPY build ./build
+COPY node_modules ./node_modules
+COPY package.json .
 
 ENV NODE_ENV production
 EXPOSE 9000
