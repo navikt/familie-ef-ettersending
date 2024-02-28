@@ -9,8 +9,6 @@
         "@navikt/ds-react": "^6.0.0",
         "@navikt/nav-dekoratoren-moduler": "^2.1.5",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
-        "@types/amplitude-js": "^8.16.5",
-        "@types/uuid": "^9.0.8",
         "amplitude-js": "^8.21.9",
         "axios": "^1.6.7",
         "constate": "^3.3.2",
@@ -88,7 +86,6 @@
         "webpack-dev-server": "^5.0.2"
     },
     "resolutions": {
-        "@types/react": "^18.x",
-        "@types/react-select": "^5.x"
+        "@types/react": "^18.x"
     }
 }
