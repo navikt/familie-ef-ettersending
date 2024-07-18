@@ -1,5 +1,8 @@
-FROM gcr.io/distroless/nodejs:18
+FROM gcr.io/distroless/nodejs20-debian12
 
+USER root
+user apprunner
+ENV TZ="Europe/Oslo"
 WORKDIR /var/server
 
 COPY assets ./assets
